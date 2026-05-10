@@ -99,7 +99,7 @@
                                 <input type="submit" value="Wyloguj się" class="alt icon solid fa-sign-out-alt">
                             </form>
                         </li>
-                        <li><a href="#" class="button">Edytuj profil</a></li>
+                        <li><a href="{{ route('profile.edit') }}" class="button">Edytuj profil</a></li>
                     </ul>
                 </article>
             </div>
