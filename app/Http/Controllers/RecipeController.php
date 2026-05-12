@@ -3,22 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Recipe;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class RecipeController extends Controller
 {
-    // Wyświetlanie listy przepisów
+    // Wyświetlanie listy wszystkich przepisów
     public function index()
     {
-        $recipes = Recipe::all();
+        $recipes = Recipe::with('category')->get();
         return view('recipes.index', compact('recipes'));
     }
 
-    // Formularz dodawania (widok)
     public function create()
     {
-        return view('recipes.create');
+        $categories = Category::all(); 
+        return view('recipes.create', compact('categories'));
     }
 
     // Zapisywanie nowego przepisu do bazy
@@ -29,22 +30,20 @@ class RecipeController extends Controller
             'description' => 'required|string',
             'prep_time' => 'required|integer',
             'calories' => 'nullable|integer',
-            'id_category' => 'required|exists:categories,id_category',
-            'recipe_image' => 'nullable|image|mimes:jpg,jpeg,png|max:5120', // max 5MB
+            'id_category' => 'required|exists:categories,id', 
+            'recipe_image' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
         ]);
 
-        // 2. Obsługa przesyłania obrazu
+        // Obsługa przesyłania obrazu
         if ($request->hasFile('recipe_image')) {
+            // Pliki trafią do storage/app/public/recipes_photos
             $path = $request->file('recipe_image')->store('recipes_photos', 'public');
             $validated['image_path'] = $path;
         }
-
-        // 3. Dodanie id_user (pobieramy od zalogowanego użytkownika)
         $validated['id_user'] = auth()->id();
 
-        // 4. Tworzenie rekordu w bazie
         Recipe::create($validated);
 
-        return redirect()->route('recipes.index')->with('success', 'Przepis dodany pomyślnie!');
+        return redirect()->route('dashboard')->with('success', 'Przepis dodany pomyślnie!');
     }
 }

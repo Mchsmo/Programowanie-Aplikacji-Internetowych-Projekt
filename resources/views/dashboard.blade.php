@@ -113,7 +113,7 @@
                         <li><a href="#">Moje przepisy</a></li>
                         <li><a href="#">Ulubione</a></li>
                         <li><a href="#">Przeglądaj wszystkie</a></li>
-                        <li><a href="#">Dodaj przepis</a></li>
+                        <li><a href="{{ route('recipes.create') }}">Dodaj przepis</a></li>
                     </ul>
                 </section>
 
