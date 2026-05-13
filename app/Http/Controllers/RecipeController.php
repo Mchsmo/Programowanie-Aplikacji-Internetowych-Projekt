@@ -12,38 +12,37 @@ class RecipeController extends Controller
     // Wyświetlanie listy wszystkich przepisów
     public function index()
     {
-        $recipes = Recipe::with('category')->get();
+        $recipes = Recipe::with(['category', 'user'])->latest()->get();
+
         return view('recipes.index', compact('recipes'));
     }
 
     public function create()
     {
-        $categories = Category::all(); 
+        $categories = \App\Models\Category::all();
         return view('recipes.create', compact('categories'));
     }
 
-    // Zapisywanie nowego przepisu do bazy
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:150',
-            'description' => 'required|string',
+            'title' => 'required|max:150',
+            'description' => 'required',
+            'id_category' => 'required|exists:categories,id_category',
+            'recipe_image' => 'nullable|image|max:5120',
             'prep_time' => 'required|integer',
-            'calories' => 'nullable|integer',
-            'id_category' => 'required|exists:categories,id', 
-            'recipe_image' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
         ]);
 
-        // Obsługa przesyłania obrazu
         if ($request->hasFile('recipe_image')) {
-            // Pliki trafią do storage/app/public/recipes_photos
             $path = $request->file('recipe_image')->store('recipes_photos', 'public');
             $validated['image_path'] = $path;
         }
+
         $validated['id_user'] = auth()->id();
+        $validated['is_visible'] = true;
 
-        Recipe::create($validated);
-
-        return redirect()->route('dashboard')->with('success', 'Przepis dodany pomyślnie!');
+        \App\Models\Recipe::create($validated);
+        
+        return redirect()->route('recipes.index')->with('success', 'Przepis został dodany i jest już widoczny!');
     }
 }

@@ -1,34 +1,29 @@
 <?php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\Recipe;
+use App\Models\Category;
 use App\Models\User;
-use App\Models\Role;
-use Illuminate\Support\Facades\Hash;
 
-class UserSeeder extends Seeder
+class ExampleRecipeSeeder extends Seeder
 {
     public function run(): void
     {
-        $admin = User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-        ]);
-        $admin->roles()->attach(Role::where('name', 'admin')->first());
+        $user = User::where('email', 'admin@example.com')->first();
 
-        $moderator = User::create([
-            'name' => 'Moderator User',
-            'email' => 'mod@example.com',
-            'password' => Hash::make('password'),
-        ]);
-        $moderator->roles()->attach(Role::where('name', 'moderator')->first());
+        $category = Category::firstOrCreate(['name' => 'Pizze']);
 
-        $user = User::create([
-            'name' => 'Jan Kowalski',
-            'email' => 'user@example.com',
-            'password' => Hash::make('password'),
+        Recipe::create([
+            'title' => 'Klasyczna Margherita',
+            'description' => 'Tradycyjna włoska pizza na cienkim cieście z sosem pomidorowym i mozzarellą.',
+            'prep_time' => 45,
+            'calories' => 850,
+            'id_category' => $category->id,
+            'id_user' => $user->id,         
+            'image_path' => 'recipes_photos/pizza.jpg', 
+            'is_visible' => true,
         ]);
-        $user->roles()->attach(Role::where('name', 'użytkownik')->first());
-    }
+
 }

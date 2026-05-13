@@ -23,10 +23,11 @@
                             </div>
 
                             <div class="col-6 col-12-small">
-                                <label for="category_id">Kategoria</label>
-                                <select name="category_id" id="category_id">
+                                <label for="id_category">Kategoria</label>
+                                <select name="id_category" id="id_category" required>
+                                    <option value="">-- Wybierz kategorię --</option>
                                     @foreach($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                        <option value="{{ $category->id_category }}">{{ $category->name }}</option>
                                     @endforeach
                                 </select>
                             </div>

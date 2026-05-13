@@ -32,7 +32,8 @@
                         <ul>
                             <li><a href="#">Moje przepisy</a></li>
                             <li><a href="#">Ulubione</a></li>
-                            <li><a href="#">Przeglądaj</a></li>
+                            <li><a href="{{ route('recipes.create') }}">Dodaj nowy przepis</a></li>
+                            <li><a href="{{ route('recipes.index') }}">Przeglądaj</a></li>
                         </ul>
                     </li>
                     @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('moderator'))
