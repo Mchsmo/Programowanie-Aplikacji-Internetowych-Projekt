@@ -20,9 +20,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard',          [AuthController::class,   'dashboard'])->name('dashboard');
     Route::post('/logout',            [AuthController::class,   'logout'])->name('logout');
 
-    Route::middleware('auth')->group(function () {
-        Route::resource('recipes', RecipeController::class);
-    });
+    Route::resource('recipes', RecipeController::class);
+    Route::get('/recipes/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
+    
     Route::get('/profile/edit',       [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile',          [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');

@@ -33,12 +33,12 @@
                             </div>
                             <div class="col-6 col-12-small">
                                 <label for="prep_time">Czas przygotowania (minuty)</label>
-                                <input type="number" name="prep_time" id="prep_time" placeholder="np. 45" required />
+                                <input type="number" name="prep_time" id="prep_time" placeholder="np. 45" min="1" required />
                             </div>
 
                             <div class="col-12">
                                 <label for="calories">Kalorie (opcjonalnie)</label>
-                                <input type="number" name="calories" id="calories" placeholder="np. 500" />
+                                <input type="number" name="calories" id="calories" placeholder="np. 500" min="0" />
                             </div>
 
                             <div class="col-12">
@@ -60,6 +60,15 @@
                             </div>
                         </div>
                     </form>
+                    @if ($errors->any())
+                        <div style="background: #f8d7da; color: #721c24; padding: 1em; margin-bottom: 1.5em; border-radius: 4px;">
+                            <ul style="margin: 0; padding-left: 1.5em;">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                 </article>
             </div>
         </div>

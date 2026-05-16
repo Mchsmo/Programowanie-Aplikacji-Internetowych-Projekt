@@ -31,7 +31,7 @@
                     </select>
                 </div>
                 <div class="col-2 col-12-small">
-                    <button type="submit" class="button icon solid fa-search" style="width: 100%; height: 3em; line-height: 3em; padding: 0; text-align: center;">Szukaj</button>
+                    <button type="submit" class="button icon solid fa-search" style="width: 100%; height: 3em; line-height: 3em; padding: 0; text-align: center;    ">Szukaj</button>
                 </div>
             </form>
         </div>
@@ -68,7 +68,7 @@
                         
                         <footer>
                             <ul class="actions">
-                                <li><a href="#" class="button alt">Zobacz przepis</a></li>
+                                <li><a href="{{ route('recipes.show', $recipe->id_recipe) }}" class="button alt">Zobacz przepis</a></li>
                             </ul>
                         </footer>
                     </section>

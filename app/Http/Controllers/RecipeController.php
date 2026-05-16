@@ -33,6 +33,17 @@ class RecipeController extends Controller
     return view('recipes.index', compact('recipes', 'categories'));
     }
 
+    public function show(Recipe $recipe)
+{
+    if (!$recipe->is_visible) {
+        abort(404, 'Przepis jest obecnie niedostępny.');
+    }
+
+    $recipe->load(['category', 'user']);
+
+    return view('recipes.show', compact('recipe'));
+}
+
     public function create()
     {
         $categories = \App\Models\Category::all();
@@ -46,7 +57,11 @@ class RecipeController extends Controller
             'description' => 'required',
             'id_category' => 'required|exists:categories,id_category',
             'recipe_image' => 'nullable|image|max:5120',
-            'prep_time' => 'required|integer',
+            'prep_time' => 'required|integer|min:1',
+            'calories' => 'nullable|integer|min:0',
+        ], [
+            'prep_time.min' => 'Czas przygotowania musi wynosić co najmniej 1 minutę.',
+            'calories.min' => 'Kaloryczność nie może być liczbą ujemną.',
         ]);
 
         if ($request->hasFile('recipe_image')) {
