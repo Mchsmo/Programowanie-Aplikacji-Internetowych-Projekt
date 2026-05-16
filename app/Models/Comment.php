@@ -15,11 +15,12 @@ class Comment extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'id_user',
-        'id_recipe',
-        'date_added',
-        'date_modified',
-    ];
+		'id_user',
+		'id_recipe',
+		'content',
+		'date_added',
+		'date_modified',
+	];
 
     protected $casts = [
         'date_added'    => 'datetime',

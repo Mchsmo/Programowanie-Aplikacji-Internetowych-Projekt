@@ -23,6 +23,8 @@ return new class extends Migration
                   ->on('recipes')
                   ->onDelete('cascade');
 
+            $table->unsignedTinyInteger('rating');
+
             $table->timestamp('date_added')->useCurrent();
 
             $table->unique(['id_user', 'id_recipe']);

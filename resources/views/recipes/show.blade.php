@@ -5,6 +5,13 @@
 @section('content')
 <section id="main">
     <div class="container">
+        
+        @if(session('success'))
+            <div style="background: #d4edda; color: #155724; padding: 1em; margin-bottom: 1.5em; border-radius: 4px; border: 1px solid #c3e6cb;">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <div class="row">
             
             <div class="col-8 col-12-medium">
@@ -33,8 +40,38 @@
                     <hr style="border: 0; border-top: 1px solid #ddd; margin: 2em 0;" />
                     
                     <section>
-                        <h3>Komentarze i opinie</h3>
-                        <p style="font-size: 0.9em; color: #bbb;"></p>
+                        <h3>Komentarze ({{ $recipe->commentsCount() }})</h3>
+                        
+                        @auth
+                            <form action="{{ route('comments.store', $recipe->id_recipe) }}" method="POST" style="margin-bottom: 2em;">
+                                @csrf
+                                <div style="margin-bottom: 1em;">
+                                    <label for="content" style="font-weight: bold; margin-bottom: 0.5em; display: block;">Dodaj swoją opinię:</label>
+                                    <textarea name="content" id="content" rows="4" placeholder="Jak wyszło danie? Podziel się wrażeniami..." required></textarea>
+                                </div>
+                                <button type="submit" class="button">Wyślij komentarz</button>
+                            </form>
+                        @else
+                            <p style="background: #f9f9f9; padding: 1em; text-align: center; border-radius: 4px; border: 1px solid #eee;">
+                                <a href="{{ route('login') }}" style="color: #ed786a; font-weight: bold;">Zaloguj się</a>, aby dodać komentarz.
+                            </p>
+                        @endauth
+
+                        <div class="comments-list" style="margin-top: 2em;">
+                            @forelse($recipe->comments as $comment)
+                                <div class="comment-item" style="border-bottom: 1px solid #eee; padding: 1.2em 0;">
+                                    <p style="margin-bottom: 0.4em;">
+                                        <strong style="color: #ed786a;">{{ $comment->user->name ?? 'Anonim' }}</strong> 
+                                        <span style="font-size: 0.8em; color: #999; float: right;">
+                                            {{ $comment->date_added ? $comment->date_added->format('d.m.Y H:i') : '' }}
+                                        </span>
+                                    </p>
+                                    <p style="color: #444; margin: 0; line-height: 1.5;">{{ $comment->content }}</p>
+                                </div>
+                            @empty
+                                <p style="color: #999; font-style: italic;">Ten przepis nie został jeszcze skomentowany. Dodaj pierwszą opinię!</p>
+                            @endforelse
+                        </div>
                     </section>
                 </article>
             </div>
@@ -46,25 +83,45 @@
                     </header>
                     <ul class="divided">
                         <li>
-                            <strong class="icon solid fa-clock" style="margin-right: 0.5em;"></strong> Czas przygotowania: 
+                            <strong class="icon solid fa-clock" style="margin-right: 0.5em;"></strong> Czas: 
                             <span style="float: right;"><strong>{{ $recipe->prep_time }} min</strong></span>
                         </li>
                         <li>
-                            <strong class="icon solid fa-fire" style="margin-right: 0.5em;"></strong> Kaloryczność: 
+                            <strong class="icon solid fa-fire" style="margin-right: 0.5em;"></strong> Kalorie: 
                             <span style="float: right;"><strong>{{ $recipe->calories ?? '?' }} kcal</strong></span>
                         </li>
                         <li>
-                            <strong class="icon solid fa-star" style="margin-right: 0.5em; color: #f1c40f;"></strong> Ocena społeczności: 
+                            <strong class="icon solid fa-star" style="margin-right: 0.5em; color: #f1c40f;"></strong> Średnia ocena: 
                             <span style="float: right;">
-                                <strong>{{ number_format($recipe->rating ?? 0.0, 1) }}/5</strong> ({{ $recipe->ratings_count ?? 0 }})
+                                <strong>{{ number_format($recipe->averageRating(), 1) }}/5</strong> ({{ $recipe->ratings->count() }})
                             </span>
                         </li>
-                        <li>
-                            <strong class="icon solid fa-calendar-alt" style="margin-right: 0.5em;"></strong> Dodano dnia: 
-                            <span style="float: right;">{{ $recipe->created_at ? $recipe->created_at->format('d.m.Y') : 'Brak danych' }}</span>
-                        </li>
                     </ul>
-                    <footer>
+
+                    <div style="margin-top: 1.5em; padding-top: 1.5em; border-top: 1px solid #eee;">
+                        <h4>Wystaw swoją ocenę:</h4>
+                        @auth
+                            <form action="{{ route('ratings.store', $recipe->id_recipe) }}" method="POST">
+                                @csrf
+                                <div style="margin-bottom: 1em;">
+                                    <select name="rating" style="width: 100%; height: 2.8em;">
+                                        <option value="5">⭐⭐⭐⭐⭐ (5/5 - Wyśmienite)</option>
+                                        <option value="4">⭐⭐⭐⭐ (4/5 - Bardzo dobre)</option>
+                                        <option value="3">⭐⭐⭐ (3/5 - Przeciętne)</option>
+                                        <option value="2">⭐⭐ (2/5 - Słabe)</option>
+                                        <option value="1">⭐ (1/5 - Niejadalne)</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="button alt small" style="width: 100%;">Zapisz ocenę</button>
+                            </form>
+                        @else
+                            <p style="font-size: 0.85em; color: #999; text-align: center;">
+                                <a href="{{ route('login') }}">Zaloguj się</a>, aby ocenić przepis.
+                            </p>
+                        @endauth
+                    </div>
+
+                    <footer style="margin-top: 2.5em;">
                         <ul class="actions">
                             <li><a href="{{ route('recipes.index') }}" class="button alt icon solid fa-arrow-left">Powrót do listy</a></li>
                         </ul>

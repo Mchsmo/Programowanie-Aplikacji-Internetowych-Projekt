@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\RatingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => redirect()->route('login'));
@@ -23,6 +25,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('recipes', RecipeController::class);
     Route::get('/recipes/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
     
+    Route::post('/recipes/{recipe}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::post('/recipes/{recipe}/ratings', [RatingController::class, 'store'])->name('ratings.store');
+
     Route::get('/profile/edit',       [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile',          [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');

@@ -23,6 +23,8 @@ return new class extends Migration
                   ->on('recipes')
                   ->onDelete('cascade');
 
+            $table->text('content');
+
             $table->timestamp('date_added')->useCurrent();
             $table->timestamp('date_modified')->nullable();
         });
