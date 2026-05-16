@@ -10,11 +10,27 @@ use Illuminate\Support\Facades\Storage;
 class RecipeController extends Controller
 {
     // Wyświetlanie listy wszystkich przepisów
-    public function index()
+    public function index(Request $request)
     {
-        $recipes = Recipe::with(['category', 'user'])->latest()->get();
 
-        return view('recipes.index', compact('recipes'));
+    $query = Recipe::with(['category', 'user'])->where('is_visible', true);
+
+    // 1. WYSZUKIWANIE: Po frazie w tytule 
+    if ($request->filled('search')) {
+        $query->where('title', 'like', '%' . $request->search . '%');
+    }
+
+    // 2. FILTROWANIE: Po wybranej kategorii 
+    if ($request->filled('category')) {
+        $query->where('id_category', $request->category);
+    }
+
+    // 3. STRONICOWANIE: Zwraca 6 przepisów na stronę 
+    $recipes = $query->latest()->paginate(6)->withQueryString();
+    
+    $categories = Category::where('is_active', true)->get();
+
+    return view('recipes.index', compact('recipes', 'categories'));
     }
 
     public function create()
