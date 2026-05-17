@@ -22,12 +22,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard',          [AuthController::class,   'dashboard'])->name('dashboard');
     Route::post('/logout',            [AuthController::class,   'logout'])->name('logout');
 
+    Route::get('/recipes/favorites',  [RecipeController::class, 'favorites'])->name('recipes.favorites');
+    Route::get('/recipes/my-recipes', [RecipeController::class, 'myRecipes'])->name('recipes.my-recipes');
+    
     Route::resource('recipes', RecipeController::class);
     Route::get('/recipes/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
     
+    Route::post('/recipes/{recipe}/favorite-toggle', [RecipeController::class, 'toggleFavorite'])->name('recipes.favorite.toggle');
     Route::post('/recipes/{recipe}/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::post('/recipes/{recipe}/ratings', [RatingController::class, 'store'])->name('ratings.store');
-
+    Route::post('/recipes/{recipe}/favorite-notes', [RecipeController::class, 'updateFavoriteNotes'])->name('recipes.favorite.notes');
+    
     Route::get('/profile/edit',       [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile',          [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');

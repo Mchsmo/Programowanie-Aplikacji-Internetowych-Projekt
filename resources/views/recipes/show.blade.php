@@ -98,6 +98,34 @@
                         </li>
                     </ul>
 
+                    <div style="margin-top: 1.5em; padding-bottom: 1.5em; border-bottom: 1px solid #eee;">
+                        @auth
+                            @php
+                                $isFavorite = $recipe->favorites()->where('id_user', auth()->id())->exists();
+                            @endphp
+
+                            <form action="{{ route('recipes.favorite.toggle', $recipe->id_recipe) }}" method="POST">
+                                @csrf
+                                @if($isFavorite)
+                                    <button type="submit" class="button primary solid small" style="width: 100%; background: #e74c3c; box-shadow: none;">
+                                        <span class="icon solid fa-heart" style="margin-right: 0.5em;"></span> Usuń z ulubionych
+                                    </button>
+                                @else
+                                    <button type="submit" class="button alt small" style="width: 100%;">
+                                        <span class="icon regular fa-heart" style="margin-right: 0.5em; color: #e74c3c;"></span> Dodaj do ulubionych
+                                    </button>
+                                @endif
+                            </form>
+                        @else
+                            <p style="font-size: 0.85em; color: #999; text-align: center; margin: 0;">
+                                <a href="{{ route('login') }}">Zaloguj się</a>, aby dodać przepis do ulubionych.
+                            </p>
+                        @endauth
+                    </div>
+
+                    <div style="margin-top: 1.5em; padding-top: 1.5em;">
+                        <h4>Wystaw swoją ocenę:</h4>
+
                     <div style="margin-top: 1.5em; padding-top: 1.5em; border-top: 1px solid #eee;">
                         <h4>Wystaw swoją ocenę:</h4>
                         @auth
@@ -105,11 +133,11 @@
                                 @csrf
                                 <div style="margin-bottom: 1em;">
                                     <select name="rating" style="width: 100%; height: 2.8em;">
-                                        <option value="5">⭐⭐⭐⭐⭐ (5/5 - Wyśmienite)</option>
-                                        <option value="4">⭐⭐⭐⭐ (4/5 - Bardzo dobre)</option>
-                                        <option value="3">⭐⭐⭐ (3/5 - Przeciętne)</option>
-                                        <option value="2">⭐⭐ (2/5 - Słabe)</option>
-                                        <option value="1">⭐ (1/5 - Niejadalne)</option>
+                                        <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                                        <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                                        <option value="3">⭐⭐⭐ (3/5)</option>
+                                        <option value="2">⭐⭐ (2/5)</option>
+                                        <option value="1">⭐ (1/5)</option>
                                     </select>
                                 </div>
                                 <button type="submit" class="button alt small" style="width: 100%;">Zapisz ocenę</button>

@@ -27,13 +27,13 @@
                     <li @class(['active' => request()->routeIs('dashboard')])>
                         <a href="{{ route('dashboard') }}"><span class="icon solid fa-user"></span> <span>Konto</span></a>
                     </li>
-                    <li>
+                    <li @class(['active' => request()->routeIs('recipes.*')])>
                         <a href="#"><span class="icon solid fa-book-open"></span> <span>Przepisy</span></a>
                         <ul>
-                            <li><a href="#">Moje przepisy</a></li>
-                            <li><a href="#">Ulubione</a></li>
+                            <li><a href="{{ route('recipes.index') }}">Przeglądaj wszystkie</a></li>
+                            <li><a href="{{ route('recipes.my-recipes') }}">Moje przepisy</a></li>
+                            <li><a href="{{ route('recipes.favorites') }}">Ulubione</a></li>
                             <li><a href="{{ route('recipes.create') }}">Dodaj nowy przepis</a></li>
-                            <li><a href="{{ route('recipes.index') }}">Przeglądaj</a></li>
                         </ul>
                     </li>
                     @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('moderator'))

@@ -5,44 +5,125 @@ namespace App\Http\Controllers;
 use App\Models\Recipe;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Builder;
 
 class RecipeController extends Controller
 {
-    // Wyświetlanie listy wszystkich przepisów
+    /**
+     * Główna lista wszystkich przepisów
+     */
     public function index(Request $request)
     {
+        $query = Recipe::where('is_visible', true);
+        
+        // Nakładamy wspólne filtry wyszukiwania i sortowania
+        $recipes = $this->applyFiltersAndSort($query, $request)->paginate(9);
+        $categories = Category::all();
 
-    $query = Recipe::with(['category', 'user'])->where('is_visible', true);
-
-    // 1. WYSZUKIWANIE: Po frazie w tytule 
-    if ($request->filled('search')) {
-        $query->where('title', 'like', '%' . $request->search . '%');
+        return view('recipes.index', compact('recipes', 'categories'));
     }
 
-    // 2. FILTROWANIE: Po wybranej kategorii 
-    if ($request->filled('category')) {
-        $query->where('id_category', $request->category);
+    /**
+     * Przepisy zalogowanego użytkownika ("Moje przepisy")
+     */
+    public function myRecipes(Request $request)
+    {
+        $query = Recipe::where('id_user', auth()->id());
+
+        $recipes = $this->applyFiltersAndSort($query, $request)->paginate(9);
+        $categories = Category::all();
+
+        return view('recipes.my-recipes', compact('recipes', 'categories'));
     }
 
-    // 3. STRONICOWANIE: Zwraca 6 przepisów na stronę 
-    $recipes = $query->latest()->paginate(6)->withQueryString();
-    
-    $categories = Category::where('is_active', true)->get();
+    /**
+     * Dodaje przepis do ulubionych lub go z nich usuwa (Toggle)
+     */
+    public function toggleFavorite($id)
+    {
+        $userId = auth()->id();
+        
+        $favorite = \App\Models\Favorite::where('id_user', $userId)
+                                        ->where('id_recipe', $id)
+                                        ->first();
 
-    return view('recipes.index', compact('recipes', 'categories'));
+        if ($favorite) {
+            $favorite->delete();
+            $status = 'Przepis został usunięty z ulubionych.';
+        } else {
+            \App\Models\Favorite::create([
+                'id_user'    => $userId,
+                'id_recipe'  => $id,
+                'date_added' => now()
+            ]);
+            $status = 'Przepis został dodany do ulubionych!';
+        }
+
+        return redirect()->back()->with('success', $status);
     }
 
-    public function show(Recipe $recipe)
-{
-    if (!$recipe->is_visible) {
-        abort(404, 'Przepis jest obecnie niedostępny.');
+    /**
+     * Ulubione przepisy użytkownika
+     */
+    public function favorites(Request $request)
+    {
+        // Pobieramy zapytanie relacji ulubionych przepisów zalogowanego usera
+        $query = Recipe::whereHas('favorites', function (Builder $q) {
+            $q->where('id_user', auth()->id());
+        });
+
+        $recipes = $this->applyFiltersAndSort($query, $request)->paginate(9);
+        $categories = Category::all();
+
+        return view('recipes.favorites', compact('recipes', 'categories'));
     }
 
-    $recipe->load(['category', 'user']);
+    public function show($id)
+    {
+        $recipe = Recipe::with(['user', 'category', 'comments.user', 'ratings'])
+            ->findOrFail($id);
 
-    return view('recipes.show', compact('recipe'));
-}
+        return view('recipes.show', compact('recipe'));
+    }
+
+    private function applyFiltersAndSort(Builder $query, Request $request): Builder
+    {
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%');
+            });
+        }
+
+        if ($request->filled('category')) {
+            $query->where('id_category', $request->input('category'));
+        }
+
+        switch ($request->input('sort')) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'prep_time_asc':
+                $query->orderBy('prep_time', 'asc');
+                break;
+            case 'prep_time_desc':
+                $query->orderBy('prep_time', 'desc');
+                break;
+            case 'calories_asc':
+                $query->orderBy('calories', 'asc');
+                break;
+            case 'calories_desc':
+                $query->orderBy('calories', 'desc');
+                break;
+            case 'latest':
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+
+        return $query;
+    }
 
     public function create()
     {
@@ -50,7 +131,7 @@ class RecipeController extends Controller
         return view('recipes.create', compact('categories'));
     }
 
-    public function store(Request $request)
+     public function store(Request $request)
     {
         $validated = $request->validate([
             'title' => 'required|max:150',
@@ -75,5 +156,25 @@ class RecipeController extends Controller
         \App\Models\Recipe::create($validated);
         
         return redirect()->route('recipes.index')->with('success', 'Przepis został dodany i jest już widoczny!');
+    }
+
+    /**
+     * Aktualizuje prywatną notatkę użytkownika dla ulubionego przepisu
+     */
+    public function updateFavoriteNotes(Request $request, $id)
+    {
+        $request->validate([
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        $favorite = \App\Models\Favorite::where('id_user', auth()->id())
+                                        ->where('id_recipe', $id)
+                                        ->firstOrFail();
+
+        $favorite->update([
+            'notes' => $request->input('notes')
+        ]);
+
+        return redirect()->back()->with('success', 'Notatka została zapisana.');
     }
 }

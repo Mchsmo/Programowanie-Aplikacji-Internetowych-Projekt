@@ -110,9 +110,9 @@
                 <section>
                     <h3>Szybkie linki</h3>
                     <ul class="divided">
-                        <li><a href="#">Moje przepisy</a></li>
-                        <li><a href="#">Ulubione</a></li>
-                        <li><a href="#">Przeglądaj wszystkie</a></li>
+                        <li><a href="{{ route('recipes.my-recipes') }}">Moje przepisy</a></li>
+                        <li><a href="{{ route('recipes.favorites') }}">Ulubione</a></li>
+                        <li><a href="{{ route('recipes.index') }}">Przeglądaj wszystkie</a></li>
                         <li><a href="{{ route('recipes.create') }}">Dodaj przepis</a></li>
                     </ul>
                 </section>
