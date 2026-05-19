@@ -59,7 +59,6 @@ class DatabaseSeeder extends Seeder
             [
                 'title' => 'Klasyczna Margherita',
                 'description' => "1. Rozwałkuj ciasto.\n2. Posmaruj sosem pomidorowym.\n3. Posyp mozzarellą.\n4. Piecz w 220 stopniach przez 10 minut.",
-                'image_path' => Arr::random($images),
                 'prep_time' => 15,
                 'calories' => 600,
                 'id_category' => 1, // Obiady
