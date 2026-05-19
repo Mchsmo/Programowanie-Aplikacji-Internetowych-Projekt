@@ -158,6 +158,31 @@ class RecipeController extends Controller
         return redirect()->route('recipes.index')->with('success', 'Przepis został dodany i jest już widoczny!');
     }
 
+    public function destroy($id)
+    {
+        $recipe = \App\Models\Recipe::findOrFail($id);
+
+        if (auth()->id() !== $recipe->id_user) {
+            return redirect()->route('recipes.my-recipes')
+                            ->with('error', 'Nie masz uprawnień do usunięcia tego przepisu.');
+        }
+
+        if ($recipe->favorites()) {
+            $recipe->favorites()->delete();
+        }
+        if (method_exists($recipe, 'comments') && $recipe->comments()) {
+            $recipe->comments()->delete();
+        }
+        if (method_exists($recipe, 'ratings') && $recipe->ratings()) {
+            $recipe->ratings()->delete();
+        }
+
+        $recipe->delete();
+
+        return redirect()->route('recipes.my-recipes')
+                        ->with('success', 'Przepis został pomyślnie usunięty.');
+    }
+
     /**
      * Aktualizuje prywatną notatkę użytkownika dla ulubionego przepisu
      */

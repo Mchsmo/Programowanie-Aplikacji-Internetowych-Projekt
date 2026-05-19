@@ -31,8 +31,8 @@
             @endforelse
         </div>
         
-        <div style="margin-top: 1em;">
-            {{ $recipes->appends(request()->query())->links() }}
+        <div style="margin-top: 2em;">
+            @include('recipes.partials.pagination', ['paginator' => $recipes->appends(request()->query())])
         </div>
 
     </div>

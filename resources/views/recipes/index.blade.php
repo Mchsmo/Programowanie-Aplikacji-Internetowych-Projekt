@@ -21,7 +21,7 @@
         </div>
         
         <div style="margin-top: 2em;">
-            {{ $recipes->appends(request()->query())->links() }}
+            @include('recipes.partials.pagination', ['paginator' => $recipes->appends(request()->query())])
         </div>
 
     </div>

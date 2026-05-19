@@ -53,12 +53,13 @@
                 <label for="notes-{{ $recipe->id_recipe }}" style="font-size: 0.75em; font-weight: bold; margin-bottom: 0.3em; display: block; color: #555; text-transform: uppercase;">
                     <span class="icon solid fa-sticky-note" style="margin-right: 0.3em; color: #f39c12;"></span> Twoje uwagi:
                 </label>
+                
                 <textarea 
                     name="notes" 
                     id="notes-{{ $recipe->id_recipe }}" 
-                    rows="2" 
-                    placeholder="np. dać mniej soli..." 
-                    style="width: 100%; font-size: 0.8em; padding: 0.4em; min-height: 45px; height: 45px; resize: none; margin-bottom: 0.4em; line-height: 1.3;"
+                    rows="4" 
+                    placeholder="np. Zmniejszyć ilość soli..." 
+                    style="width: 100%; font-size: 0.85em; padding: 0.5em; min-height: 90px; height: 90px; resize: vertical; margin-bottom: 0.5em; line-height: 1.4;"
                 >{{ $favRecord->notes ?? '' }}</textarea>
                 
                 <button type="submit" class="button alt small" style="width: 100%; height: 2em; line-height: 2em; padding: 0; font-size: 0.75em; text-transform: none;">
@@ -71,17 +72,6 @@
                 <button type="submit" class="button alt small icon solid fa-heart-broken" style="width: 100%; height: 2em; line-height: 2em; padding: 0; color: #bbb; border-color: #ddd; font-size: 0.75em; text-transform: none;">
                     Usuń z ulubionych
                 </button>
-            </form>
-        </div>
-    @endif
-
-    @if(request()->routeIs('recipes.my-recipes'))
-        <div style="padding: 0 1em; border-top: 1px solid #eee; margin-top: 0.5em; padding-top: 0.8em; display: flex; gap: 0.5em;">
-            <a href="{{ route('recipes.edit', $recipe->id_recipe) }}" class="button alt small" style="flex: 1; text-align: center; height: 2em; line-height: 2em; padding: 0; font-size: 0.75em;">Edytuj</a>
-            <form action="{{ route('recipes.destroy', $recipe->id_recipe) }}" method="POST" style="flex: 1; margin: 0;" onsubmit="return confirm('Usunąć przepis?');">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="button alt small" style="width: 100%; height: 2em; line-height: 2em; padding: 0; font-size: 0.75em; background: #fff5f5; color: #c0392b; border-color: #f5c6cb;">Usuń</button>
             </form>
         </div>
     @endif
