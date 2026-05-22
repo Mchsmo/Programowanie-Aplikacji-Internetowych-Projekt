@@ -15,10 +15,12 @@ class RecipeController extends Controller
     public function index(Request $request)
     {
         $query = Recipe::where('is_visible', true);
-        
-        // Nakładamy wspólne filtry wyszukiwania i sortowania
         $recipes = $this->applyFiltersAndSort($query, $request)->paginate(9);
         $categories = Category::all();
+
+        if ($request->ajax()) {
+            return view('recipes.partials.recipes-list', compact('recipes'))->render();
+        }
 
         return view('recipes.index', compact('recipes', 'categories'));
     }
@@ -29,9 +31,12 @@ class RecipeController extends Controller
     public function myRecipes(Request $request)
     {
         $query = Recipe::where('id_user', auth()->id());
-
         $recipes = $this->applyFiltersAndSort($query, $request)->paginate(9);
         $categories = Category::all();
+
+        if ($request->ajax()) {
+            return view('recipes.partials.recipes-list', compact('recipes'))->render();
+        }
 
         return view('recipes.my-recipes', compact('recipes', 'categories'));
     }
@@ -67,13 +72,16 @@ class RecipeController extends Controller
      */
     public function favorites(Request $request)
     {
-        // Pobieramy zapytanie relacji ulubionych przepisów zalogowanego usera
         $query = Recipe::whereHas('favorites', function (Builder $q) {
             $q->where('id_user', auth()->id());
         });
 
         $recipes = $this->applyFiltersAndSort($query, $request)->paginate(9);
         $categories = Category::all();
+
+        if ($request->ajax()) {
+            return view('recipes.partials.recipes-list', compact('recipes'))->render();
+        }
 
         return view('recipes.favorites', compact('recipes', 'categories'));
     }

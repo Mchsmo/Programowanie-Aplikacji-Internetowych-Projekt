@@ -19,31 +19,98 @@
 
         @include('recipes.partials.search-bar')
 
-        <div class="row">
-            @forelse($recipes as $recipe)
-                <div class="col-4 col-12-medium">
-                    @include('recipes.partials.recipe-card', ['recipe' => $recipe])
-                    
-                    <div style="display: flex; gap: 0.5em; margin-top: -1em; margin-bottom: 2em; padding: 0 1em;">
-                        <form action="{{ route('recipes.destroy', $recipe->id_recipe) }}" method="POST" style="flex: 1;" onsubmit="return confirm('Czy na pewno chcesz usunąć ten przepis?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="button alt small" style="width: 100%; height: 2.2em; line-height: 2.2em; padding: 0; background: #862222; color: #c0392b; border-color: #55161c;">Usuń</button>
-                        </form>
-                    </div>
-                </div>
-            @empty
-                <div class="col-12" style="text-align: center; padding: 4em 0;">
-                    <div class="icon solid fa-utensils" style="font-size: 3em; color: #ccc; margin-bottom: 0.5em;"></div>
-                    <p style="color: #999; font-style: italic; font-size: 1.1em;">Nie stworzyłeś jeszcze żadnych przepisów lub nie pasują do filtrów.</p>
-                </div>
-            @endforelse
-        </div>
-        
-        <div style="margin-top: 2em;">
-            @include('recipes.partials.pagination', ['paginator' => $recipes->appends(request()->query())])
+        <div id="recipes-container">
+            @include('recipes.partials.recipes-list')
         </div>
 
     </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('recipes-container');
+    const form = document.querySelector('.search-sort-form');
+
+    function fetchRecipes(url) {
+        // Efekt płynnego przejścia (przezroczystość podczas ładowania)
+        container.style.opacity = '0.5';
+
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Błąd połączenia z serwerem');
+            }
+            return response.text();
+        })
+        .then(html => {
+            container.innerHTML = html;
+            container.style.opacity = '1';
+            
+            // Płynne przewinięcie ekranu na górę listy po zmianie strony/filtrów
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        })
+        .catch(error => {
+            console.error('Błąd pobierania danych AJAX:', error);
+            container.style.opacity = '1';
+        });
+    }
+
+    // 1. Obsługa wysyłania formularza (Filtruj)
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const params = new URLSearchParams(formData).toString();
+            const actionUrl = form.getAttribute('action') || window.location.pathname;
+            const targetUrl = `${actionUrl}?${params}`;
+
+            // Podmieniamy adres URL w przeglądarce, by zachować filtry w historii
+            window.history.pushState({}, '', targetUrl);
+            fetchRecipes(targetUrl);
+        });
+
+        // Obsługa czyszczenia filtrów (Reset)
+        form.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('button') && e.target.innerText === 'Reset') {
+                e.preventDefault();
+                form.reset();
+                
+                // Ręczne czyszczenie selektorów i pól tekstowych
+                form.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+                form.querySelectorAll('input[type="text"]').forEach(input => input.value = '');
+
+                const baseUrl = window.location.pathname;
+                window.history.pushState({}, '', baseUrl);
+                fetchRecipes(baseUrl);
+            }
+        });
+    }
+
+    // 2. Obsługa kliknięć w przyciski stronnicowania (Paginacja)
+    if (container) {
+        container.addEventListener('click', function(e) {
+            const anchor = e.target.closest('a');
+            if (anchor && container.contains(anchor)) {
+                e.preventDefault();
+                const targetUrl = anchor.getAttribute('href');
+                
+                if (targetUrl && targetUrl !== '#') {
+                    window.history.pushState({}, '', targetUrl);
+                    fetchRecipes(targetUrl);
+                }
+            }
+        });
+    }
+
+    // Obsługa strzałek "Wstecz" i "Dalej" w przeglądarce użytkownika
+    window.addEventListener('popstate', function() {
+        fetchRecipes(window.location.href);
+    });
+});
+</script>
 @endsection
