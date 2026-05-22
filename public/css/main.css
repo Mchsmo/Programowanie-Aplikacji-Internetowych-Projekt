@@ -2703,3 +2703,106 @@ input, select, textarea {
 				}
 
 	}
+	body, p, span, li, time, .box p {
+    color: #222222 !important;
+    font-weight: 400;
+}
+
+.search-sort-form label {
+    color: #111111 !important;
+    font-weight: 600 !important;
+    font-size: 0.95em !important;
+}
+
+h1, h2, h3, h4, h5, h6, #main h2, #main h3, .box h3 a {
+    color: #111111 !important;
+    font-weight: 700 !important;
+}
+
+input[type="text"],
+select,
+textarea {
+    color: #111111 !important;
+    background: #ffffff !important;
+    border: 2px solid #666666 !important; 
+    border-radius: 4px !important;
+    opacity: 1 !important;
+    font-weight: 500 !important;
+}
+
+input[type="text"]::placeholder,
+textarea::placeholder {
+    color: #555555 !important;
+    opacity: 1 !important;
+}
+
+input[type="text"]:focus,
+select:focus,
+textarea:focus {
+    border-color: #ed786a !important; 
+    box-shadow: 0 0 5px rgba(237, 120, 106, 0.5) !important;
+}
+
+.button, 
+button, 
+input[type="submit"], 
+input[type="button"] {
+    text-decoration: none !important;
+    font-weight: 600 !important;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.button.primary, 
+button.primary,
+input[type="submit"].primary {
+    background: #ed786a !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+.button.primary:hover, 
+button.primary:hover {
+    background: #df5d4f !important;
+}
+
+.button.alt, 
+button.alt,
+a.button.alt {
+    background: #f4f4f4 !important;
+    color: #111111 !important;
+    border: 2px solid #444444 !important;
+    box-shadow: none !important;
+}
+.button.alt:hover, 
+button.alt:hover,
+a.button.alt:hover {
+    background: #e2e2e2 !important;
+    color: #000000 !important;
+}
+
+form button[style*="background: #862222"],
+#recipes-container button[style*="background: #862222"] {
+    background: #c0392b !important; 
+    color: #ffffff !important;      
+    border: 1px solid #962d22 !important;
+    font-weight: bold !important;
+}
+form button[style*="background: #862222"]:hover {
+    background: #a93226 !important;
+}
+
+#main a, 
+.box h3 a, 
+#recipes-container a:not(.button) {
+    color: #111111 !important;
+    text-decoration: none !important;
+}
+
+.box h3 a:hover {
+    color: #ed786a !important;
+}
+
+div[style*="background: #d4edda"] {
+    background-color: #d4edda !important;
+    color: #155724 !important;
+    border: 2px solid #c3e6cb !important;
+}

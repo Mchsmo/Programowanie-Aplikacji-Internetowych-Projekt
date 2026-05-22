@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('.search-sort-form');
 
     function fetchRecipes(url) {
-        // Efekt ładowania (półprzezroczystość listy)
         container.style.opacity = '0.5';
 
         fetch(url, {
@@ -32,44 +31,37 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => {
             if (!response.ok) {
                 throw new Error('Błąd połączenia z serwerem');
-            }
+            
             return response.text();
         })
         .then(html => {
             container.innerHTML = html;
             container.style.opacity = '1';
             
-            // Płynne przewinięcie ekranu na górę wyników wyszukiwania
             container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         })
         .catch(error => {
-            console.error('Błąd pobierania danych AJAX:', error);
+            console.error('Błąd:', error);
             container.style.opacity = '1';
         });
     }
 
-    // 1. Obsługa wysyłania formularza wyszukiwania (przycisk Filtruj)
     if (form) {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            
             const formData = new FormData(form);
-            const params = new URLSearchParams(formData).toString();
-            const actionUrl = form.getAttribute('action') || window.location.pathname;
-            const targetUrl = `${actionUrl}?${params}`;
+            const searchParams = new URLSearchParams(formData);
+            const targetUrl = form.getAttribute('action') + '?' + searchParams.toString();
 
-            // Zmiana adresu URL w przeglądarce bez przeładowania
             window.history.pushState({}, '', targetUrl);
             fetchRecipes(targetUrl);
         });
 
-        // Obsługa resetowania filtrów (przycisk Reset)
         form.addEventListener('click', function(e) {
             if (e.target && e.target.classList.contains('button') && e.target.innerText === 'Reset') {
                 e.preventDefault();
                 form.reset();
                 
-                // Ręczne czyszczenie kontrolek wejściowych i rozwijanych list
                 form.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
                 form.querySelectorAll('input[type="text"]').forEach(input => input.value = '');
 
@@ -80,11 +72,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 2. Obsługa kliknięć w przyciski paginacji (strony 1, 2, Następna itp.)
     if (container) {
         container.addEventListener('click', function(e) {
             const anchor = e.target.closest('a');
-            if (anchor && container.contains(anchor)) {
+            
+            if (anchor && (anchor.closest('.pagination') || anchor.closest('nav'))) {
                 e.preventDefault();
                 const targetUrl = anchor.getAttribute('href');
                 
@@ -96,7 +88,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 3. Obsługa natywnych strzałek nawigacyjnych przeglądarki (wstecz i dalej w historii)
     window.addEventListener('popstate', function() {
         fetchRecipes(window.location.href);
     });

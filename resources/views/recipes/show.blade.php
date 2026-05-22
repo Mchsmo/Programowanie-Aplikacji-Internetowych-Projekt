@@ -2,6 +2,36 @@
 
 @section('title', $recipe->title)
 
+@push('styles')
+<style>
+    /* Poprawa widoczności i układu dla pól komentarzy i ocen */
+    textarea, select {
+        width: 100% !important;
+        background: #ffffff !important;
+        border: 2px solid #666666 !important;
+        border-radius: 4px !important;
+        color: #111111 !important;
+        padding: 0.5em 1em !important;
+        font-family: inherit;
+    }
+    
+    select {
+        height: 3em !important;
+    }
+
+    textarea:focus, select:focus {
+        border-color: #ed786a !important;
+    }
+
+    /* Poprawa czytelności opisu */
+    .recipe-description {
+        line-height: 1.7;
+        color: #222222;
+        font-size: 1.05em;
+    }
+</style>
+@endpush
+
 @section('content')
 <section id="main">
     <div class="container">
@@ -122,9 +152,6 @@
                             </p>
                         @endauth
                     </div>
-
-                    <div style="margin-top: 1.5em; padding-top: 1.5em;">
-                        <h4>Wystaw swoją ocenę:</h4>
 
                     <div style="margin-top: 1.5em; padding-top: 1.5em; border-top: 1px solid #eee;">
                         <h4>Wystaw swoją ocenę:</h4>
