@@ -43,11 +43,6 @@
         font-size: 1em !important;
     }
 
-    .auth-box input:focus {
-        border-color: #ed786a !important;
-        box-shadow: 0 0 5px rgba(237, 120, 106, 0.5) !important;
-    }
-
     .auth-box .actions {
         display: flex;
         flex-direction: column;
@@ -82,18 +77,10 @@
         border: none !important;
     }
 
-    .auth-box .actions li input[type="submit"].primary:hover {
-        background: #df5d4f !important;
-    }
-
     .auth-box .actions li .button.alt {
         background: #f4f4f4 !important;
         color: #111111 !important;
         border: 2px solid #444444 !important;
-    }
-
-    .auth-box .actions li .button.alt:hover {
-        background: #e2e2e2 !important;
     }
 
     .error-list {

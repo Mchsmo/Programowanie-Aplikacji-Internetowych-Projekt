@@ -35,6 +35,12 @@ class User extends Authenticatable
             'is_active'         => 'boolean',
         ];
     }
+
+    public function hasRole(string $roleName): bool
+    {
+        return $this->roles()->where('name', $roleName)->exists();
+    }
+
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'user_role', 'user_id', 'role_id')
@@ -61,20 +67,13 @@ class User extends Authenticatable
         return $this->hasMany(Comment::class, 'id_user');
     }
 
-    /** Kto stworzył tego użytkownika */
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'id_user_created');
     }
 
-    /** Kto ostatnio zmodyfikował tego użytkownika */
     public function modifiedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'id_user_modified');
-    }
-	
-    public function hasRole(string $roleName): bool
-    {
-        return $this->roles->contains('name', $roleName);
     }
 }

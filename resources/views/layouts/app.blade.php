@@ -46,8 +46,7 @@
                                 <li><a href="#">Ustawienia</a></li>
                             @endif
                             @if (auth()->user()->hasRole('moderator'))
-                                <li><a href="#">Moderacja treści</a></li>
-                                <li><a href="#">Zgłoszenia</a></li>
+                                <li><a href="{{ route('moderation.index') }}">Moderacja treści</a></li>
                             @endif
                         </ul>
                     </li>

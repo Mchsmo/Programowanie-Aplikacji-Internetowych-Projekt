@@ -64,7 +64,6 @@
         margin: 0 !important; 
     }
 
-    /* Stylizacja przycisków na dole formularza */
     .auth-box .actions li input[type="submit"],
     .auth-box .actions li .button {
         display: block;
@@ -94,10 +93,6 @@
         color: #111111 !important;
         border: 2px solid #444444 !important;
     }
-
-    .auth-box .actions li .button.alt:hover {
-        background: #e2e2e2 !important;
-    } 
 
     .field-error {
         color: #c0392b;

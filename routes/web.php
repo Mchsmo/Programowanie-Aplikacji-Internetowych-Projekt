@@ -5,6 +5,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\ModerationController;
+use App\Http\Middleware\CheckModeratorRole;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => redirect()->route('login'));
@@ -17,7 +19,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 
-// Zalogowani
+// Zalogowani (ogólne trasy)
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard',          [AuthController::class,   'dashboard'])->name('dashboard');
     Route::post('/logout',            [AuthController::class,   'logout'])->name('logout');
@@ -36,4 +38,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/edit',       [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile',          [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
+    Route::middleware(CheckModeratorRole::class)->group(function () {
+        Route::get('/moderacja', [ModerationController::class, 'index'])->name('moderation.index');
+
+        // Akcje usuwania i blokowania
+        Route::delete('/moderacja/przepisy/{recipe}', [ModerationController::class, 'destroyRecipe'])->name('moderation.recipes.destroy');
+        Route::delete('/moderacja/komentarze/{comment}', [ModerationController::class, 'destroyComment'])->name('moderation.comments.destroy');
+        Route::post('/moderacja/uzytkownicy/{user}/toggle', [ModerationController::class, 'toggleUserStatus'])->name('moderation.users.toggle');
+    });
 });
