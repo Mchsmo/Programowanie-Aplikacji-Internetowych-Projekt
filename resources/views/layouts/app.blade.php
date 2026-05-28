@@ -36,21 +36,25 @@
                             <li><a href="{{ route('recipes.create') }}">Dodaj nowy przepis</a></li>
                         </ul>
                     </li>
+
                     @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('moderator'))
-                    <li>
+                    <li @class(['active' => request()->routeIs('admin.*') || request()->routeIs('moderation.*')])>
                         <a href="#"><span class="icon solid fa-cog"></span> <span>Panel Zarządzania</span></a>
                         <ul>
                             @if (auth()->user()->hasRole('admin'))
-                                <li><a href="#">Użytkownicy</a></li>
-                                <li><a href="#">Role</a></li>
-                                <li><a href="#">Ustawienia</a></li>
+                                <li>
+                                    <a href="{{ route('admin.users.index') }}">Użytkownicy</a>
+                                </li>
                             @endif
                             @if (auth()->user()->hasRole('moderator'))
-                                <li><a href="{{ route('moderation.index') }}">Moderacja treści</a></li>
+                                <li>
+                                    <a href="{{ route('moderation.index') }}">Moderacja treści</a>
+                                </li>
                             @endif
                         </ul>
                     </li>
                     @endif
+
                     <li>
                         <form method="POST" action="{{ route('logout') }}" style="display:inline">
                             @csrf
