@@ -17,10 +17,37 @@
         @endif
 
         <style>
-            .mod-tabs { display: flex; list-style: none; padding: 0; margin: 0 0 1.5em 0; border-bottom: 2px solid #e5e5e5; }
-            .mod-tabs li { margin-right: 0.5em; }
-            .mod-tabs a { display: block; padding: 0.75em 1.5em; text-decoration: none; border: 2px solid transparent; border-bottom: none; border-radius: 4px 4px 0 0; font-weight: 600; color: #777; }
-            .mod-tabs a.active { background: #fff; border-color: #e5e5e5; color: #ed786a; border-bottom-color: #fff; margin-bottom: -2px; }
+            /* POPRAWIONE STYLE ZAKŁADEK - Idealne wyrównanie do dołu */
+            .mod-tabs { 
+                display: flex; 
+                align-items: flex-end; 
+                list-style: none; 
+                padding: 0; 
+                margin: 0 0 1.5em 0; 
+                border-bottom: 2px solid #e5e5e5; 
+            }
+            .mod-tabs li { 
+                margin-right: 0.5em; 
+            }
+            .mod-tabs a { 
+                display: block; 
+                padding: 0.75em 1.5em; 
+                text-decoration: none; 
+                border: 2px solid transparent; 
+                border-bottom: none; 
+                border-radius: 4px 4px 0 0; 
+                font-weight: 600; 
+                color: #777; 
+                line-height: 1.2;
+            }
+            .mod-tabs a.active { 
+                background: #fff; 
+                border-color: #e5e5e5 #e5e5e5 transparent #e5e5e5; 
+                color: #ed786a; 
+                margin-bottom: -2px; 
+                position: relative;
+                z-index: 2;
+            }
             
             .tab-content { display: none; }
             .tab-content.active { display: block; }
@@ -84,12 +111,12 @@
                             @foreach($recipes as $recipe)
                                 <tr>
                                     <td>
-                                        <a href="{{ route('recipes.show', $recipe->id_recipe) }}" target="_blank"><strong>{{ $recipe->title }}</strong></a>
+                                        <a href="{{ route('recipes.show', $recipe->id_recipe ?? $recipe->id ?? $recipe) }}" target="_blank"><strong>{{ $recipe->title }}</strong></a>
                                     </td>
                                     <td>{{ $recipe->user ? $recipe->user->name : 'Anonim' }}</td>
-                                    <td>{{ $recipe->created_at->format('d.m.Y H:i') }}</td>
+                                    <td>{{ $recipe->created_at?->format('d.m.Y H:i') ?? '-' }}</td>
                                     <td style="text-align: right;">
-                                        <form action="{{ route('moderation.recipes.destroy', $recipe->id_recipe) }}" method="POST" style="display:inline;" onsubmit="return confirm('Czy na pewno chcesz bezpowrotnie usunąć ten przepis?')">
+                                        <form action="{{ route('moderation.recipes.destroy', $recipe->id_recipe ?? $recipe->id ?? $recipe) }}" method="POST" style="display:inline;" onsubmit="return confirm('Czy na pewno chcesz bezpowrotnie usunąć ten przepis?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="button small" style="background:#e74c3c; box-shadow:none; color:#fff;">Usuń</button>
@@ -100,7 +127,7 @@
                         </tbody>
                     </table>
                 </div>
-                {{ $recipes->fragment('recipes')->links('recipes.partials.pagination') }}
+                {{ $recipes->withPath(route('moderation.index'))->appends(['comments_page' => $comments->currentPage(), 'users_page' => $users->currentPage()])->fragment('recipes')->links('recipes.partials.pagination') }}
             @endif
         </div>
 
@@ -115,7 +142,6 @@
                                 <th>Treść komentarza</th>
                                 <th>Autor</th>
                                 <th>Przepis</th>
-                                <th>Data</th>
                                 <th style="text-align: right;">Akcje</th>
                             </tr>
                         </thead>
@@ -126,14 +152,13 @@
                                     <td>{{ $comment->user ? $comment->user->name : 'Anonim' }}</td>
                                     <td>
                                         @if($comment->recipe)
-                                            <a href="{{ route('recipes.show', $comment->recipe->id_recipe) }}" target="_blank">{{ Str::limit($comment->recipe->title, 30) }}</a>
+                                            <a href="{{ route('recipes.show', $comment->recipe->id_recipe ?? $comment->recipe->id ?? $comment->recipe) }}" target="_blank">{{ Str::limit($comment->recipe->title, 30) }}</a>
                                         @else
                                             <span style="color: gray; font-style: italic;">[Usunięty przepis]</span>
                                         @endif
                                     </td>
-                                    <td>{{ $comment->created_at->format('d.m.Y H:i') }}</td>
                                     <td style="text-align: right;">
-                                        <form action="{{ route('moderation.comments.destroy', $comment->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Czy na pewno chcesz usunąć ten komentarz?')">
+                                        <form action="{{ route('moderation.comments.destroy', $comment->id_comment ?? $comment->id ?? $comment) }}" method="POST" style="display:inline;" onsubmit="return confirm('Czy na pewno chcesz usunąć ten komentarz?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="button small" style="background:#e74c3c; box-shadow:none; color:#fff;">Usuń</button>
@@ -144,7 +169,7 @@
                         </tbody>
                     </table>
                 </div>
-                {{ $comments->fragment('comments')->links('recipes.partials.pagination') }}
+                {{ $comments->withPath(route('moderation.index'))->appends(['recipes_page' => $recipes->currentPage(), 'users_page' => $users->currentPage()])->fragment('comments')->links('recipes.partials.pagination') }}
             @endif
         </div>
 
@@ -168,7 +193,7 @@
                                 <tr>
                                     <td><strong>{{ $user->name }}</strong></td>
                                     <td>{{ $user->email }}</td>
-                                    <td>{{ $user->created_at ? $user->created_at->format('d.m.Y') : '-' }}</td>
+                                    <td>{{ $user->created_at?->format('d.m.Y') ?? '-' }}</td>
                                     <td>
                                         @if($user->is_active)
                                             <span style="color: #27ae60; font-weight: bold;">Aktywny</span>
@@ -177,10 +202,10 @@
                                         @endif
                                     </td>
                                     <td style="text-align: right;">
-                                        <form action="{{ route('moderation.users.toggle', $user->id) }}" method="POST" style="display:inline;">
+                                        <form action="{{ route('moderation.users.toggle', $user->id ?? $user) }}" method="POST" style="display:inline;">
                                             @csrf
                                             @if($user->is_active)
-                                                <button type="submit" class="button small alt" style="border-color:#e67e22; color:#e67e22;">Zablokuj</button>
+                                                <button type="submit" class="button small alt" style="border-color:#e67e22; color:#e67e22; box-shadow: none;">Zablokuj</button>
                                             @else
                                                 <button type="submit" class="button small" style="background:#2ecc71; box-shadow:none; color:#fff;">Odblokuj</button>
                                             @endif
@@ -191,7 +216,7 @@
                         </tbody>
                     </table>
                 </div>
-                {{ $users->fragment('users')->links('recipes.partials.pagination') }}
+                {{ $users->withPath(route('moderation.index'))->appends(['recipes_page' => $recipes->currentPage(), 'comments_page' => $comments->currentPage()])->fragment('users')->links('recipes.partials.pagination') }}
             @endif
         </div>
 
@@ -211,7 +236,6 @@ function switchTab(evt, tabId) {
     window.location.hash = tabId;
 }
 
-// Obsługa zapamiętania aktywnej karty po przeładowaniu / paginacji
 document.addEventListener("DOMContentLoaded", function() {
     const hash = window.location.hash;
     if (hash && document.getElementById(hash.replace('#', ''))) {

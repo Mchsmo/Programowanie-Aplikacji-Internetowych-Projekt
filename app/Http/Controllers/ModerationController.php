@@ -47,16 +47,20 @@ class ModerationController extends Controller
         return redirect()->route('moderation.index')->with('success', 'Komentarz został pomyślnie usunięty.');
     }
 
-    /**
-     * Blokowanie / Odblokowywanie użytkownika (przełącznik is_active)
-     */
     public function toggleUserStatus(User $user)
-    {
-        $user->is_active = !$user->is_active;
-        $user->id_user_modified = auth()->id();
-        $user->save();
-
-        $status = $user->is_active ? 'odblokowany' : 'zablokowany';
-        return redirect()->route('moderation.index')->with('success', "Użytkownik {$user->name} został {$status}.");
+{
+    if ($user->hasRole('admin')) {
+        abort(403, 'Nie masz uprawnień do modyfikowania statusu konta administratora.');
     }
+
+    // Odwracamy status (true -> false / false -> true)
+    $user->is_active = !$user->is_active;
+    
+    // Zapisujemy zmiany w bazie danych
+    $user->save(); 
+
+    $status = $user->is_active ? 'odblokowane' : 'zablokowane';
+    
+    return redirect()->route('moderation.index')->with('success', "Konto użytkownika {$user->name} zostało pomyślnie {$status}.");
+}
 }

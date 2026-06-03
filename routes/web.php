@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Middleware\CheckModeratorRole;
+use App\Http\Middleware\CheckUserActive;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => redirect()->route('login'));
@@ -21,7 +22,7 @@ Route::middleware('guest')->group(function () {
 });
 
 // Zalogowani
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', CheckUserActive::class])->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
     Route::post('/logout',   [AuthController::class, 'logout'])->name('logout');
 
@@ -40,18 +41,18 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile',          [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
-    // Moderator
-    Route::middleware(CheckModeratorRole::class)->group(function () {
-        Route::get('/moderacja', [ModerationController::class, 'index'])->name('moderation.index');
-        Route::delete('/moderacja/przepisy/{recipe}',         [ModerationController::class, 'destroyRecipe'])->name('moderation.recipes.destroy');
-        Route::delete('/moderacja/komentarze/{comment}',      [ModerationController::class, 'destroyComment'])->name('moderation.comments.destroy');
-        Route::post('/moderacja/uzytkownicy/{user}/toggle',   [ModerationController::class, 'toggleUserStatus'])->name('moderation.users.toggle');
-    });
-
     // Administrator
     Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function () {
         Route::resource('users', AdminUserController::class)->except(['create', 'store']);
         Route::patch('users/{user}/toggle-active', [AdminUserController::class, 'toggleActive'])->name('users.toggle-active');
         Route::post('users/{user}/roles',          [AdminUserController::class, 'syncRoles'])->name('users.sync-roles');
+    });
+
+    // Moderator
+    Route::middleware('role:moderator')->group(function () {
+        Route::get('/moderacja', [ModerationController::class, 'index'])->name('moderation.index');
+        Route::delete('/moderacja/przepisy/{recipe}',         [ModerationController::class, 'destroyRecipe'])->name('moderation.recipes.destroy');
+        Route::delete('/moderacja/komentarze/{comment}',      [CommentController::class, 'destroyComment'])->name('moderation.comments.destroy');
+        Route::post('/moderacja/uzytkownicy/{user}/toggle',   [ModerationController::class, 'toggleUserStatus'])->name('moderation.users.toggle');
     });
 });
