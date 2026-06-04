@@ -64,37 +64,37 @@
 
         {{-- Tabela --}}
         <div style="overflow-x:auto;">
-        <table>
+        <table style="width:100%; border-collapse:collapse;">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th style="width:50px;">#</th>
                     <th>Użytkownik</th>
                     <th>E-mail</th>
                     <th>Role</th>
-                    <th>Status</th>
-                    <th>Zarejestrowany</th>
-                    <th>Akcje</th>
+                    <th style="width:130px;">Status</th>
+                    <th style="width:140px;">Zarejestrowany</th>
+                    <th style="width:180px; text-align:center;">Akcje</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($users as $user)
-                    <tr>
-                        <td>{{ $user->id }}</td>
-                        <td>
-                            <a href="{{ route('admin.users.show', $user) }}">{{ $user->name }}</a>
+                    <tr style="vertical-align:middle;">
+                        <td style="padding:0.75em 0.5em;">{{ $user->id }}</td>
+                        <td style="padding:0.75em 0.5em;">
+                            <a href="{{ route('admin.users.show', $user) }}" style="font-weight:600;">{{ $user->name }}</a>
                         </td>
-                        <td>{{ $user->email }}</td>
-                        <td>
+                        <td style="padding:0.75em 0.5em;">{{ $user->email }}</td>
+                        <td style="padding:0.75em 0.5em;">
                             @forelse ($user->roles as $role)
-                                <span style="display:inline-block;padding:.15em .6em;border-radius:3px;
-                                      background:#e3f2fd;color:#1565c0;font-size:.8em;margin:1px;">
+                                <span style="display:inline-block;padding:.2em .6em;border-radius:3px;
+                                      background:#e3f2fd;color:#1565c0;font-size:.8em;font-weight:600;margin:1px;text-transform:uppercase;">
                                     {{ $role->name }}
                                 </span>
                             @empty
-                                <span style="color:#999;font-size:.85em;">brak</span>
+                                <span style="color:#999;font-size:.85em;font-style:italic;">brak</span>
                             @endforelse
                         </td>
-                        <td>
+                        <td style="padding:0.75em 0.5em; white-space:nowrap;">
                             @if ($user->is_active)
                                 <span style="color:#2e7d32;font-weight:600;">
                                     <span class="icon solid fa-check-circle"></span> Aktywny
@@ -105,40 +105,38 @@
                                 </span>
                             @endif
                         </td>
-                        <td style="white-space:nowrap;">{{ $user->created_at->format('d.m.Y') }}</td>
-                        <td style="white-space:nowrap;">
-                            <a href="{{ route('admin.users.show', $user) }}"
-                               class="button small icon solid fa-eye" title="Podgląd"></a>
+                        <td style="padding:0.75em 0.5em; white-space:nowrap;">{{ $user->created_at->format('d.m.Y') }}</td>
+                        <td style="padding:0.75em 0.5em; text-align:center;">
+                            <div style="display:inline-flex; gap:6px; justify-content:center; align-items:center; width:100%;">
+                                {{-- Podgląd --}}
+                                <a href="{{ route('admin.users.show', $user) }}"
+                                   class="button small icon solid fa-eye" title="Podgląd" 
+                                   style="display:inline-block !important; width:36px !important; height:36px !important; line-height:36px !important; padding:0 !important; text-align:center !important; margin:0 !important;"></a>
 
-                            <a href="{{ route('admin.users.edit', $user) }}"
-                               class="button small icon solid fa-edit" title="Edytuj"></a>
+                                @if ($user->id !== auth()->id())
+                                    {{-- Toggle aktywności --}}
+                                    <form method="POST" action="{{ route('admin.users.toggle-active', $user) }}" style="margin:0 !important; display:inline !important;">
+                                        @csrf @method('PATCH')
+                                        <button type="submit"
+                                                class="button small icon solid {{ $user->is_active ? 'fa-user-slash' : 'fa-user-check' }}"
+                                                title="{{ $user->is_active ? 'Dezaktywuj' : 'Aktywuj' }}"
+                                                style="display:inline-block !important; width:36px !important; height:36px !important; line-height:36px !important; padding:0 !important; text-align:center !important; margin:0 !important;"
+                                                onclick="return confirm('{{ $user->is_active ? 'Dezaktywować' : 'Aktywować' }} tego użytkownika?')">
+                                        </button>
+                                    </form>
 
-                            {{-- Toggle aktywności --}}
-                            @if ($user->id !== auth()->id())
-                                <form method="POST"
-                                      action="{{ route('admin.users.toggle-active', $user) }}"
-                                      style="display:inline;">
-                                    @csrf @method('PATCH')
-                                    <button type="submit"
-                                            class="button small icon solid {{ $user->is_active ? 'fa-user-slash' : 'fa-user-check' }}"
-                                            title="{{ $user->is_active ? 'Dezaktywuj' : 'Aktywuj' }}"
-                                            onclick="return confirm('{{ $user->is_active ? 'Dezaktywować' : 'Aktywować' }} tego użytkownika?')">
-                                    </button>
-                                </form>
-
-                                {{-- Usuń --}}
-                                <form method="POST"
-                                      action="{{ route('admin.users.destroy', $user) }}"
-                                      style="display:inline;">
-                                    @csrf @method('DELETE')
-                                    <button type="submit"
-                                            class="button small icon solid fa-trash"
-                                            style="background:#c62828;border-color:#c62828;"
-                                            title="Usuń"
-                                            onclick="return confirm('Na pewno usunąć użytkownika „{{ addslashes($user->name) }}"? Operacja jest nieodwracalna.')">
-                                    </button>
-                                </form>
-                            @endif
+                                    {{-- Usuń --}}
+                                    <form method="POST" action="{{ route('admin.users.destroy', $user) }}" style="margin:0 !important; display:inline !important;">
+                                        @csrf @method('DELETE')
+                                        <button type="submit"
+                                                class="button small icon solid fa-trash"
+                                                style="background:#c62828 !important; border-color:#c62828 !important; color:#fff !important; display:inline-block !important; width:36px !important; height:36px !important; line-height:36px !important; padding:0 !important; text-align:center !important; margin:0 !important;"
+                                                title="Usuń"
+                                                onclick="return confirm('Na pewno usunąć użytkownika „{{ addslashes($user->name) }}”? Operacja jest nieodwracalna.')">
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                 @empty

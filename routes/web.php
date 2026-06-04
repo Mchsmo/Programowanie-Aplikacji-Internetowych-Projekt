@@ -52,7 +52,7 @@ Route::middleware(['auth', CheckUserActive::class])->group(function () {
     Route::middleware('role:moderator')->group(function () {
         Route::get('/moderacja', [ModerationController::class, 'index'])->name('moderation.index');
         Route::delete('/moderacja/przepisy/{recipe}',         [ModerationController::class, 'destroyRecipe'])->name('moderation.recipes.destroy');
-        Route::delete('/moderacja/komentarze/{comment}',      [CommentController::class, 'destroyComment'])->name('moderation.comments.destroy');
+        Route::delete('/moderacja/komentarze/{comment}',      [ModerationController::class, 'destroyComment'])->name('moderation.comments.destroy');
         Route::post('/moderacja/uzytkownicy/{user}/toggle',   [ModerationController::class, 'toggleUserStatus'])->name('moderation.users.toggle');
     });
 });

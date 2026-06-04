@@ -17,7 +17,6 @@
         @endif
 
         <style>
-            /* POPRAWIONE STYLE ZAKŁADEK - Idealne wyrównanie do dołu */
             .mod-tabs { 
                 display: flex; 
                 align-items: flex-end; 
@@ -88,10 +87,10 @@
         </style>
 
         <ul class="mod-tabs">
-            <li><a href="#recipes" class="tab-link active" onclick="switchTab(event, 'recipes')">Przepisy ({{ $recipes->total() }})</a></li>
-            <li><a href="#comments" class="tab-link" onclick="switchTab(event, 'comments')">Komentarze ({{ $comments->total() }})</a></li>
-            <li><a href="#users" class="tab-link" onclick="switchTab(event, 'users')">Użytkownicy ({{ $users->total() }})</a></li>
-        </ul>
+        <li><a href="#recipes" class="tab-link active" onclick="switchTab(null, 'recipes')">Przepisy ({{ $recipes->total() }})</a></li>
+        <li><a href="#comments" class="tab-link" onclick="switchTab(null, 'comments')">Komentarze ({{ $comments->total() }})</a></li>
+        <li><a href="#users" class="tab-link" onclick="switchTab(null, 'users')">Użytkownicy ({{ $users->total() }})</a></li>
+    </ul>
 
         <div id="recipes" class="tab-content active">
             @if($recipes->isEmpty())
@@ -225,27 +224,39 @@
 
 <script>
 function switchTab(evt, tabId) {
-    if(evt) evt.preventDefault();
     
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
     document.querySelectorAll('.tab-link').forEach(link => link.classList.remove('active'));
     
     document.getElementById(tabId).classList.add('active');
-    if(evt) evt.currentTarget.classList.add('active');
     
-    window.location.hash = tabId;
+    if (evt && evt.currentTarget) {
+        evt.currentTarget.classList.add('active');
+    } else {
+        const activeLink = document.querySelector(`.mod-tabs a[href="#${tabId}"]`);
+        if (activeLink) activeLink.classList.add('active');
+    }
+
+    localStorage.setItem('activeModTab', tabId);
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+    let tabTarget = null;
     const hash = window.location.hash;
+
     if (hash && document.getElementById(hash.replace('#', ''))) {
-        const tabTarget = hash.replace('#', '');
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.tab-link').forEach(link => link.classList.remove('active'));
-        
-        document.getElementById(tabTarget).classList.add('active');
-        const activeLink = document.querySelector(`.mod-tabs a[href="${hash}"]`);
-        if(activeLink) activeLink.classList.add('active');
+        tabTarget = hash.replace('#', '');
+    } 
+    else {
+        const savedTab = localStorage.getItem('activeModTab');
+        if (savedTab && document.getElementById(savedTab)) {
+            tabTarget = savedTab;
+        }
+    }
+
+    if (tabTarget) {
+        switchTab(null, tabTarget);
+        window.location.hash = tabTarget;
     }
 });
 </script>

@@ -10,7 +10,7 @@
                 {{ $user->name }}
                 @if (!$user->is_active)
                     <span style="font-size:.55em;vertical-align:middle;background:#ffcdd2;
-                          color:#c62828;padding:.2em .7em;border-radius:3px;margin-left:.5em;">
+                          color:#c62828;padding:.2em .7em;border-radius:3px;margin-left:.5em;font-weight:700;">
                         Nieaktywny
                     </span>
                 @endif
@@ -60,7 +60,7 @@
             {{-- Statystyki --}}
             <div class="col-6 col-12-medium">
                 <div class="box">
-                    <h3><span class="icon solid fa-chart-bar"></span> Aktywność</h3>
+                    <h3><span class="icon solid fa-chart-bar"></span> Aktywność w serwisie</h3>
                     <table>
                         <tr>
                             <th><span class="icon solid fa-book-open"></span> Przepisy</th>
@@ -88,9 +88,9 @@
         <div class="box">
             <h3><span class="icon solid fa-shield-alt"></span> Role użytkownika</h3>
 
-            <form method="POST" action="{{ route('admin.users.sync-roles', $user) }}" id="roles-form">
+            <form method="POST" action="{{ route('admin.users.sync-roles', $user) }}" id="roles-form" style="margin:0;">
                 @csrf
-                <div style="display:flex;gap:.75em;flex-wrap:wrap;margin-bottom:1.25em;" id="roles-container">
+                <div style="display:flex;gap:.75em;flex-wrap:wrap;margin-bottom:1.5em;" id="roles-container">
                     @foreach ($allRoles as $role)
                         @php $checked = $user->roles->contains($role->id); @endphp
                         <button type="button"
@@ -98,18 +98,22 @@
                                 data-active="{{ $checked ? '1' : '0' }}"
                                 onclick="toggleRole(this)"
                                 style="
-                                    cursor:pointer;
-                                    padding:.55em 1.2em;
-                                    border-radius:4px;
-                                    border:2px solid {{ $checked ? '#c0392b' : '#bbb' }};
-                                    background:{{ $checked ? '#fdecea' : '#f5f5f5' }};
-                                    color:{{ $checked ? '#c0392b' : '#666' }};
-                                    font-weight:{{ $checked ? '700' : '400' }};
-                                    font-size:.9em;
-                                    letter-spacing:.04em;
-                                    transition:all .15s;
+                                    cursor:pointer !important;
+                                    padding:.6em 1.4em !important;
+                                    border-radius:4px !important;
+                                    height:auto !important;
+                                    line-height:normal !important;
+                                    margin:0 !important;
+                                    border:2px solid {{ $checked ? '#c0392b' : '#bbb' }} !important;
+                                    background:{{ $checked ? '#fdecea' : '#f5f5f5' }} !important;
+                                    color:{{ $checked ? '#c0392b' : '#333333' }} !important;
+                                    font-weight:{{ $checked ? '700' : '600' }} !important;
+                                    font-size:.9em !important;
+                                    letter-spacing:.04em !important;
+                                    box-shadow:none !important;
+                                    transition:all .15s ease-in-out;
                                 ">
-                            <span style="margin-right:.4em;">{{ $checked ? '✓' : '+' }}</span>
+                            <span style="margin-right:.4em; font-weight:bold; color:inherit;">{{ $checked ? '✓' : '+' }}</span>
                             {{ strtoupper($role->name) }}
                         </button>
                         @if ($checked)
@@ -119,49 +123,46 @@
                         @endif
                     @endforeach
                 </div>
-                <button type="submit" class="button small icon solid fa-save">
-                    Zapisz role
+                <button type="submit" class="button small icon solid fa-save" style="margin:0 !important; height:auto !important; padding: 0.75em 1.5em !important; line-height: normal !important;">
+                    Zapisz uprawnienia ról
                 </button>
             </form>
         </div>
 
-        {{-- Przyciski akcji --}}
-        <div style="display:flex;gap:.75em;flex-wrap:wrap;margin-top:1.5em;align-items:center;">
-
-            <a href="{{ route('admin.users.edit', $user) }}" class="button icon solid fa-edit">
-                Edytuj dane
-            </a>
+        {{-- Przyciski akcji (dolny pasek) --}}
+        <div style="display:flex; gap:1em; flex-wrap:wrap; margin-top:2.5em; align-items:center; border-top:1px solid #dee2e6; padding-top:1.5em;">
 
             @if ($user->id !== auth()->id())
-                <form method="POST" action="{{ route('admin.users.toggle-active', $user) }}" style="margin:0;">
+                <form method="POST" action="{{ route('admin.users.toggle-active', $user) }}" style="margin:0 !important; display:inline-block;">
                     @csrf @method('PATCH')
                     <button type="submit"
                             class="button icon solid {{ $user->is_active ? 'fa-user-slash' : 'fa-user-check' }}"
-                            onclick="return confirm('{{ $user->is_active ? 'Dezaktywować' : 'Aktywować' }} użytkownika?')">
-                        {{ $user->is_active ? 'Dezaktywuj' : 'Aktywuj' }}
+                            style="margin:0 !important; padding:0 1.5em !important; height:3em !important; line-height:3em !important; display:inline-flex !important; align-items:center;">
+                        {{ $user->is_active ? 'Dezaktywuj konto' : 'Aktywuj konto' }}
                     </button>
                 </form>
 
-                <form method="POST" action="{{ route('admin.users.destroy', $user) }}" style="margin:0;">
+                <form method="POST" action="{{ route('admin.users.destroy', $user) }}" style="margin:0 !important; display:inline-block;">
                     @csrf @method('DELETE')
                     <button type="submit"
                             class="button icon solid fa-trash"
-                            style="background:#c62828;border-color:#c62828;"
-                            onclick="return confirm('Na pewno usunąć konto „{{ addslashes($user->name) }}"?')">
-                        Usuń konto
+                            style="background:#c62828 !important; border-color:#c62828 !important; color:#fff !important; margin:0 !important; padding:0 1.5em !important; height:3em !important; line-height:3em !important; display:inline-flex !important; align-items:center;"
+                            onclick="return confirm('Na pewno trwale usunąć konto użytkownika „{{ addslashes($user->name) }}”?')">
+                        Usuń użytkownika
                     </button>
                 </form>
             @endif
 
             <a href="{{ route('admin.users.index') }}" class="button alt icon solid fa-arrow-left"
-               style="margin-left:auto;">
-                Wróć do listy
+               style="margin-left:auto !important; margin-top:0 !important; margin-bottom:0 !important; margin-right:0 !important; padding:0 1.5em !important; height:3em !important; line-height:3em !important; display:inline-flex !important; align-items:center; justify-content:center; text-align:center;">
+                Wróć do listy użytkowników
             </a>
 
         </div>
 
     </div>
 </section>
+
 @push('scripts')
 <script>
 function toggleRole(btn) {
@@ -171,19 +172,19 @@ function toggleRole(btn) {
 
     if (isActive) {
         btn.dataset.active        = '0';
-        btn.style.border          = '2px solid #bbb';
-        btn.style.background      = '#f5f5f5';
-        btn.style.color           = '#666';
-        btn.style.fontWeight      = '400';
+        btn.style.setProperty('border', '2px solid #bbb', 'important');
+        btn.style.setProperty('background', '#f5f5f5', 'important');
+        btn.style.setProperty('color', '#333333', 'important');
+        btn.style.setProperty('font-weight', '600', 'important');
         btn.querySelector('span').textContent = '+';
         input.disabled            = true;
         input.value               = '';
     } else {
         btn.dataset.active        = '1';
-        btn.style.border          = '2px solid #c0392b';
-        btn.style.background      = '#fdecea';
-        btn.style.color           = '#c0392b';
-        btn.style.fontWeight      = '700';
+        btn.style.setProperty('border', '2px solid #c0392b', 'important');
+        btn.style.setProperty('background', '#fdecea', 'important');
+        btn.style.setProperty('color', '#c0392b', 'important');
+        btn.style.setProperty('font-weight', '700', 'important');
         btn.querySelector('span').textContent = '✓';
         input.disabled            = false;
         input.value               = id;
@@ -191,5 +192,4 @@ function toggleRole(btn) {
 }
 </script>
 @endpush
-
 @endsection
