@@ -16,17 +16,9 @@
     
     .auth-box h2 { 
         text-align: center; 
-        margin-bottom: 1.2em;
-        letter-spacing: 2px;
-        color: #111111 !important;
-        font-weight: 700 !important;
     }
 
     .auth-box label {
-        display: block;
-        text-align: left;
-        margin-bottom: 0.4em;
-        font-weight: 600 !important;
         color: #222222 !important;
     }
 

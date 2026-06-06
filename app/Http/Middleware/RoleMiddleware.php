@@ -10,7 +10,6 @@ class RoleMiddleware
 {
     /**
      * Sprawdza, czy zalogowany użytkownik posiada wymaganą rolę.
-     * Obsługuje wiele ról rozdzielonych przecinkiem: middleware('role:admin,moderator')
      */
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {

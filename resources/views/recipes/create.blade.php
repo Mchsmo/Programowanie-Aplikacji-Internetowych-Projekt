@@ -141,7 +141,7 @@
                         <h2>Dodaj nowy przepis</h2>
                     </header>
 
-                    <form action="{{ route('recipes.store') }}" method="POST" enctype="multipart/form-data" class="recipe-form">
+                    <form action="{{ route('recipes.store') }}" method="POST" enctype="multipart/form-data" class="recipe-form" onsubmit="this.querySelector('input[type=submit]').disabled=true; this.querySelector('input[type=submit]').value='Wysyłanie...'; return true;">
                         @csrf
 
                         <div class="row gtr-50">

@@ -24,9 +24,6 @@
 
     .auth-box label {
         display: block;
-        text-align: left;
-        margin-bottom: 0.4em;
-        font-weight: 600 !important;
         color: #222222 !important;
     }
 
