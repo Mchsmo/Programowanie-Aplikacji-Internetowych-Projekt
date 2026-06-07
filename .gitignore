@@ -19,9 +19,6 @@ yarn-error.log
 /.vscode
 
 /storage/app/private/
-/storage/app/public/
-!/storage/app/public/recipes_photos/
-!/storage/app/public/recipes_photos/**
 /storage/logs/
 /storage/framework/cache/
 /storage/framework/sessions/
