@@ -2806,3 +2806,15 @@ div[style*="background: #d4edda"] {
     color: #155724 !important;
     border: 2px solid #c3e6cb !important;
 }
+
+body.is-preload #page-wrapper {
+    opacity: 1 !important;
+}
+
+body {
+    pointer-events: auto !important;
+}
+
+#titleBar, .dropotron, #header, #main {
+    pointer-events: auto !important;
+}

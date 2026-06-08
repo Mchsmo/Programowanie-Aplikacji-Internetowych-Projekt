@@ -95,10 +95,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (container) {
         container.addEventListener('click', function(e) {
             const anchor = e.target.closest('a');
-            if (anchor && container.contains(anchor)) {
+
+            if (anchor && anchor.closest('.pagination')) {
                 e.preventDefault();
                 const targetUrl = anchor.getAttribute('href');
-                
+
                 if (targetUrl && targetUrl !== '#') {
                     window.history.pushState({}, '', targetUrl);
                     fetchRecipes(targetUrl);
