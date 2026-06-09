@@ -166,7 +166,7 @@
         <form method="GET" action="{{ route('admin.users.index') }}" class="box filters-form">
             <div class="flex-input-search">
                 <label for="search">Szukaj</label>
-                <input type="text" id="search" name="search" value="{{ request('search') }}" placeholder="Imię lub e-mail…" class="w-100">
+                <input type="text" id="search" name="search" value="{{ request('search') }}" placeholder="Nazwa lub e-mail…" class="w-100">
             </div>
             <div class="flex-input-select">
                 <label for="role">Rola</label>

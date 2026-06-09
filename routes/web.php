@@ -21,10 +21,12 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 
+Route::post('/logout',   [AuthController::class, 'logout'])->name('logout');
+Route::get('/logout', fn() => redirect()->route('login'));
+
 // Zalogowani
 Route::middleware(['auth', CheckUserActive::class])->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
-    Route::post('/logout',   [AuthController::class, 'logout'])->name('logout');
 
     // Przepisy
     Route::get('/recipes/favorites',  [RecipeController::class, 'favorites'])->name('recipes.favorites');

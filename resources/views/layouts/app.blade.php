@@ -56,14 +56,12 @@
                     @endif
 
                     <li>
-                        <form method="POST" action="{{ route('logout') }}" style="display:inline">
+                        <form method="POST" action="{{ route('logout') }}" id="logout-form" style="display:none">
                             @csrf
-                            <button type="submit" style="all:unset;cursor:pointer;">
-                                <a href="#" onclick="this.closest('form').submit();return false;">
-                                    <span class="icon solid fa-sign-out-alt"></span> <span>Wyloguj</span>
-                                </a>
-                            </button>
                         </form>
+                        <a href="#" onclick="document.getElementById('logout-form').submit(); return false;">
+                            <span class="icon solid fa-sign-out-alt"></span> <span>Wyloguj</span>
+                        </a>
                     </li>
                     @endauth
                 </ul>

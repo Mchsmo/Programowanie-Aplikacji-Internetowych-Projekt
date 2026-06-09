@@ -141,7 +141,7 @@
                     <h3><span class="icon solid fa-info-circle"></span> Dane konta</h3>
                     <table class="user-info-table">
                         <tr><th>ID</th><td>{{ $user->id }}</td></tr>
-                        <tr><th>Imię i nazwisko</th><td>{{ $user->name }}</td></tr>
+                        <tr><th>Nazwa użytkownika</th><td>{{ $user->name }}</td></tr>
                         <tr><th>E-mail</th><td>{{ $user->email }}</td></tr>
                         <tr><th>Status</th>
                             <td>
